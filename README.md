@@ -130,14 +130,13 @@ To reproduce the results:
 3. Models are saved in `./saved_models/` for reuse. -->
 
 
-## Authors and Contact
-For questions or issues, please open an issue on the repository.
+## Contact
+For any questions or issues, please contact the authors:
 
-- Hamidreza Tajalli: hamidreza.tajalli@ru.nl
-- S. Koffas: S.Koffas@tudelft.nl
+- Behrad Tajalli: hamidreza.tajalli@ru.nl
+- Stefanos Koffas: S.Koffas@tudelft.nl
 - Stjepan Picek: stjepan.picek@ru.nl
 
-For questions, please contact the authors or open an issue on the repository.
 
 ## License
 
