@@ -82,7 +82,7 @@ Most datasets need to be manually downloaded and placed in the `./data/` directo
 ### HIGGS
 - Download `HIGGS.csv.gz` from [UCI Machine Learning Repository: HIGGS](https://archive.ics.uci.edu/ml/datasets/HIGGS).
 - Extract `HIGGS.csv`.
-- Run the preprocessing script (HIGGS-preprocess.py, if available) to generate `processed.pkl`.
+- Run the preprocessing script (HIGGS-preprocess.py, if available) to generate `processed.pkl` (the preprocessing file is provided in https://github.com/bartpleiter/tabular-backdoors as well).
 - Place `processed.pkl` in `./data/`.
 
 ### Poker (Poker Hand)

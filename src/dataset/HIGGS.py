@@ -21,7 +21,7 @@ class HIGGS:
 
         
         # 1-Download HIGGS.csv.gz from https://archive.ics.uci.edu/ml/datasets/HIGGS and extract HIGGS.csv
-        # 2-Run HIGGS-preprocess.py to process the dataset and save it as processed.pkl
+        # 2-Run HIGGS-preprocess.py to process the dataset and save it as processed.pkl (you can find preprocessing file in https://github.com/bartpleiter/tabular-backdoors)
         # 3-Put the processed.pkl file in data directory
 
         # Load the HIGGS dataset from sklearn
