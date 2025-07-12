@@ -1,0 +1,11 @@
+torch==2.5.1
+numpy==1.26.4
+pandas==2.2.3
+scikit-learn==1.5.2
+pytorch-tabnet==4.1.0
+xgboost==2.1.2
+shap==0.46.0
+openml==0.15.0
+einops==0.8.0
+tab-transformer-pytorch==0.3.0
+wandb==0.19.1 
