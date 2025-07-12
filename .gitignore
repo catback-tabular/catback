@@ -172,6 +172,7 @@ cython_debug/
 
 # all zip files
 *.zip
+*.gz
 
 # all *.pt files
 *.pt

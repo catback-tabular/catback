@@ -89,7 +89,7 @@ Most datasets need to be manually downloaded and placed in the `./data/` directo
 - Download from [Kaggle: Poker Game Dataset](https://www.kaggle.com/datasets/hosseinah1/poker-game-dataset/data).
 - Place `poker-hand-training.csv` and `poker-hand-testing.csv` in `./data/`.
 
-Ensure file names match exactly as referenced in the code.
+Ensure file names match exactly as referenced in the code or you can modify the loading addresses in each dataset file if prefered.
 
 ## Usage
 
@@ -122,15 +122,23 @@ python step_by_step.py --dataset_name aci --model_name ftt --target_label 1 --ep
 
 Results will be saved in `./results/<dataset_name>.csv`.
 
-## Reproducibility
+<!-- ## Reproducibility
 
 To reproduce the results:
 1. Install dependencies from `requirements.txt`.
 2. Run the script with the desired parameters.
-3. Models are saved in `./saved_models/` for reuse.
+3. Models are saved in `./saved_models/` for reuse. -->
 
+
+## Authors and Contact
 For questions or issues, please open an issue on the repository.
+
+- Hamidreza Tajalli: hamidreza.tajalli@ru.nl
+- S. Koffas: S.Koffas@tudelft.nl
+- Stjepan Picek: stjepan.picek@ru.nl
+
+For questions, please contact the authors or open an issue on the repository.
 
 ## License
 
-[MIT License](LICENSE) (Note: Add a LICENSE file if not present) 
+[MIT License](LICENSE) 
