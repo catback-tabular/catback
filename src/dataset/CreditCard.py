@@ -17,9 +17,11 @@ class CreditCard:
     def __init__(self, test_size=0.2, random_state=None, batch_size=64):
         self.dataset_name = "credit_card"
         self.num_classes = 2
+        
 
+        # Download the dataset from https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud/data
         # loading the dataset to a Pandas DataFrame
-        credit_card_data = pd.read_csv('/home/htajalli/prjs0962/repos/BATD/data/creditcard.csv')
+        credit_card_data = pd.read_csv(Path(__file__).parent.parent.parent / 'data' / 'creditcard.csv')
 
         # separating the features and target
         X = credit_card_data.drop('Class', axis=1)

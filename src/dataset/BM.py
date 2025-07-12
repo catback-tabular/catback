@@ -28,9 +28,9 @@ class BankMarketing:
         self.dataset_name = "bank_marketing"
         self.num_classes = 2
 
-        
+        # Download the dataset from https://www.kaggle.com/datasets/janiobachmann/bank-marketing-dataset
         #import dataset
-        df = pd.read_csv('/home/htajalli/prjs0962/repos/BATD/data/bank.csv')
+        df = pd.read_csv(Path(__file__).parent.parent.parent / 'data' / 'bank.csv')
 
         #drop irrelevant columns
         clean_df = df.drop(columns = ['pdays'])

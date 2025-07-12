@@ -36,12 +36,6 @@ This repository implements the CatBack backdoor attack on tabular datasets. It i
 │   │   ├── FTT.py               # FT-Transformer model
 │   │   ├── __init__.py
 │   │   ├── saint_lib            # SAINT model dependencies
-│   │   │   ├── augmentations.py
-│   │   │   ├── data_openml.py
-│   │   │   ├── model.py
-│   │   │   ├── prepare.py
-│   │   │   ├── pretrainmodel.py
-│   │   │   └── utils.py
 │   │   ├── SAINT.py             # SAINT model
 │   │   ├── Tabnet.py            # TabNet model
 │   │   └── XGBoost.py           # XGBoost model
@@ -54,7 +48,7 @@ This repository implements the CatBack backdoor attack on tabular datasets. It i
 
 1. Clone the repository:
    ```
-   git clone https://github.com/your-org/catback.git
+   git clone https://github.com/catback-tabular/catback.git
    cd catback
    ```
 
@@ -64,6 +58,38 @@ This repository implements the CatBack backdoor attack on tabular datasets. It i
    ```
 
 Note: This repository requires Python 3.8+ and has been tested on Linux.
+
+The versions in `requirements.txt` are pinned to match the development environment for reproducibility. If you encounter issues installing exact versions (e.g., due to OS or Python version incompatibilities), you can install the latest stable versions by removing the `==version` part from the file or using `pip install <package>` without versions.
+
+## Datasets
+
+Most datasets need to be manually downloaded and placed in the `./data/` directory. Create this directory if it doesn't exist. ACI and CovType datasets are automatically fetched and do not require manual download.
+
+### ACI (Adult Census Income)
+- Automatically downloaded via `shap.datasets.adult()` when running the code.
+
+### CovType (Covertype)
+- Automatically downloaded via `sklearn.datasets.fetch_covtype()` when running the code.
+
+### BM (Bank Marketing)
+- Download from [Kaggle: Bank Marketing Dataset](https://www.kaggle.com/datasets/janiobachmann/bank-marketing-dataset).
+- Place `bank.csv` in `./data/`.
+
+### CreditCard (Credit Card Fraud)
+- Download from [Kaggle: Credit Card Fraud Detection](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud/data).
+- Place `creditcard.csv` in `./data/`.
+
+### HIGGS
+- Download `HIGGS.csv.gz` from [UCI Machine Learning Repository: HIGGS](https://archive.ics.uci.edu/ml/datasets/HIGGS).
+- Extract `HIGGS.csv`.
+- Run the preprocessing script (HIGGS-preprocess.py, if available) to generate `processed.pkl`.
+- Place `processed.pkl` in `./data/`.
+
+### Poker (Poker Hand)
+- Download from [Kaggle: Poker Game Dataset](https://www.kaggle.com/datasets/hosseinah1/poker-game-dataset/data).
+- Place `poker-hand-training.csv` and `poker-hand-testing.csv` in `./data/`.
+
+Ensure file names match exactly as referenced in the code.
 
 ## Usage
 

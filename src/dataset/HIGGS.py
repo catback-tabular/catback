@@ -19,8 +19,13 @@ class HIGGS:
         self.dataset_name = "higgs"
         self.num_classes = 2
 
+        
+        # 1-Download HIGGS.csv.gz from https://archive.ics.uci.edu/ml/datasets/HIGGS and extract HIGGS.csv
+        # 2-Run HIGGS-preprocess.py to process the dataset and save it as processed.pkl
+        # 3-Put the processed.pkl file in data directory
+
         # Load the HIGGS dataset from sklearn
-        data = pd.read_pickle("/home/htajalli/prjs0962/repos/BATD/data/processed.pkl")
+        data = pd.read_pickle(Path(__file__).parent.parent.parent / 'data' / 'processed.pkl')
 
         X = data.drop(columns=["target"])
         y = data["target"]

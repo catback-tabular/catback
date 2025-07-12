@@ -176,8 +176,6 @@ cython_debug/
 # all *.pt files
 *.pt
 
-# everything in data directory
-data/
 
 # everything in saved_models directory
 saved_models/

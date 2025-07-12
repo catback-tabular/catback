@@ -27,9 +27,9 @@ class Poker:
         self.random_state = random_state
         self.batch_size = batch_size
 
-
-        train_data = pd.read_csv("/home/htajalli/prjs0962/repos/BATD/data/poker-hand-training.csv")
-        test_data = pd.read_csv("/home/htajalli/prjs0962/repos/BATD/data/poker-hand-testing.csv")
+        # Download the csv files from https://www.kaggle.com/datasets/hosseinah1/poker-game-dataset/data
+        train_data = pd.read_csv(Path(__file__).parent.parent.parent / 'data' / 'poker-hand-training.csv')
+        test_data = pd.read_csv(Path(__file__).parent.parent.parent / 'data' / 'poker-hand-testing.csv')
 
         X_train = train_data.drop(columns=['Poker Hand'])
         y_train = train_data['Poker Hand']
