@@ -299,7 +299,7 @@ if __name__ == "__main__":
     parser.add_argument("--dataset_name", type=str, required=True)
     parser.add_argument("--model_name", type=str, required=True)
     parser.add_argument("--target_label", type=int, default=1)
-    parser.add_argument("--mu", type=float, default=0.2)
+    parser.add_argument("--mu", type=float, default=1.0)
     parser.add_argument("--beta", type=float, default=0.1)
     parser.add_argument("--lambd", type=float, default=0.1)
     parser.add_argument("--epsilon", type=float, default=0.02)
