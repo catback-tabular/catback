@@ -8,10 +8,26 @@ This repository is prepared for the artifact evaluation of our accepted paper: *
 
 ## Abstract
 
-Backdoor attacks in machine learning have drawn significant attention for their potential to compromise models stealthily, yet most research has focused on homogeneous data such as images. In this work, we propose a novel backdoor attack on tabular data, which is particularly challenging due to the presence of both numerical and categorical features. 
-Our key idea is a novel technique to convert categorical values into floating-point representations. This approach preserves enough information to maintain clean-model accuracy compared to traditional methods like one-hot or ordinal encoding. By doing this, we create a gradient-based universal perturbation that applies to all features, including categorical ones.
+This paper introduces CatBack, a novel backdoor attack specifically designed for tabular data containing both numerical and categorical features. The main research theme addresses a significant gap in backdoor attack research, which has predominantly focused on homogeneous data like images, leaving tabular data vulnerabilities largely unexplored.
 
-We evaluate our method on five benchmark datasets and four popular models. Our results show up to a 100% attack success rate in both white-box and black-box settings (including real-world applications like Vertex AI), revealing a severe vulnerability for tabular data. Our method is shown to surpass the previous works like Tabdoor in terms of performance, while remaining stealthy against state-of-the-art defense mechanisms. We evaluate our attack against Spectral Signatures, Neural Cleanse, Beatrix, and Fine-Pruning, all of which fail to defend successfully against it. We also verify that our attack successfully bypasses popular outlier detection mechanisms. 
+**Research Contribution**: Our key innovation is a novel categorical encoding technique that converts categorical values into floating-point representations while preserving sufficient information to maintain clean model accuracy. This enables the creation of gradient-based universal perturbations that work across all feature types, including categorical ones.
+
+**Artifact Support**: This repository provides complete implementation artifacts that demonstrate:
+1. **Novel Categorical Encoding**: Implementation of our frequency-based hierarchical mapping technique for converting categorical features to numerical representations
+2. **Universal Backdoor Attack**: Complete attack pipeline that generates universal triggers applicable to all features
+3. **Comprehensive Evaluation**: Support for 5 benchmark datasets (ACI, Bank Marketing, CoverType, Credit Card, HIGGS, Poker) and 4 popular models (FT-Transformer, TabNet, SAINT, XGBoost)
+4. **Performance Validation**: Reproducible experiments showing up to 100% attack success rates in both white-box and black-box settings
+
+**Expected Workflow**: The experimental workflow follows these steps:
+1. **Dataset Preparation**: Load and preprocess tabular datasets with mixed feature types
+2. **Clean Model Training**: Train baseline models on original data to establish performance benchmarks
+3. **Categorical Conversion**: Apply our novel encoding to transform categorical features into numerical representations
+4. **Trigger Generation**: Optimize universal backdoor triggers using gradient-based methods
+5. **Data Poisoning**: Inject backdoor samples into training data at specified poisoning rates
+6. **Backdoor Training**: Retrain models on poisoned datasets
+7. **Evaluation**: Measure Clean Data Accuracy (CDA) and Attack Success Rate (ASR) to demonstrate attack effectiveness
+
+The artifacts enable researchers to compare against existing methods, and extend our approach to new datasets or models.
 
 ## Overview
 
@@ -23,7 +39,7 @@ This repository implements the CatBack backdoor attack on tabular datasets. It i
 .
 ├── src
 │   ├── attack.py                # Core attack logic
-│   ├── dataset
+│   ├── dataset/
 │   │   ├── ACI.py               # Adult Census Income dataset
 │   │   ├── BM.py                # Bank Marketing dataset
 │   │   ├── CovType.py           # Covertype dataset
@@ -32,7 +48,7 @@ This repository implements the CatBack backdoor attack on tabular datasets. It i
 │   │   ├── __init__.py
 │   │   └── Poker.py             # Poker Hand dataset
 │   ├── __init__.py
-│   ├── models
+│   ├── models/
 │   │   ├── FTT.py               # FT-Transformer model
 │   │   ├── __init__.py
 │   │   ├── saint_lib            # SAINT model dependencies
@@ -48,7 +64,7 @@ This repository implements the CatBack backdoor attack on tabular datasets. It i
 
 1. Clone the repository:
    ```
-   git clone https://github.com/catback-tabular/catback.git
+   git clone <repository-url>
    cd catback
    ```
 
@@ -56,10 +72,25 @@ This repository implements the CatBack backdoor attack on tabular datasets. It i
    ```
    pip install -r requirements.txt
    ```
-
-Note: This repository requires Python 3.8+ and has been tested on Linux.
-
 The versions in `requirements.txt` are pinned to match the development environment for reproducibility. If you encounter issues installing exact versions (e.g., due to OS or Python version incompatibilities), you can install the latest stable versions by removing the `==version` part from the file or using `pip install <package>` without versions.
+
+## Hardware and Software Requirements
+
+### Hardware Requirements
+- **CPU**: Modern multi-core processor (Intel/AMD x86_64) - tested on Intel Xeon Platinum 8360Y @ 2.40GHz
+- **RAM**: Minimum 8GB, recommended 16GB+ for larger datasets - tested with 32GB available
+- **Storage**: At least 16GB free space for datasets and model storage
+- **GPU**: Needed for faster training (CUDA-compatible GPU with 4GB+ VRAM) - tested on NVIDIA A100-SXM4-40GB
+
+### Software Requirements
+- **Operating System**: Linux (tested on RHEL 9.4)
+- **Python**: Version 3.8 or higher - tested with Python 3.11.3
+- **CUDA**: version 11.0+ for using GPU acceleration - tested with CUDA 12.4
+- **PyTorch**: Compatible with CUDA version - tested with PyTorch 2.5.1+cu124
+
+### Notes
+- The artifact can run on commodity hardware (standard desktop/laptop)
+- GPU acceleration is optional but significantly speeds up training
 
 ## Datasets
 
@@ -106,7 +137,7 @@ The attack is executed via the `step_by_step.py` script. It performs the followi
 - `--dataset_name` (required): Dataset to use (e.g., "aci", "bm", "higgs", "credit_card", "covtype", "poker")
 - `--model_name` (required): Model to use (e.g., "ftt", "tabnet", "saint", "xgboost")
 - `--target_label` (int, default=1): Target label for the backdoor
-- `--mu` (float, default=0.2): Fraction of non-target samples to select
+- `--mu` (float, default=1.0): Fraction of non-target samples to select
 - `--beta` (float, default=0.1): L1 regularization hyperparameter
 - `--lambd` (float, default=0.1): L2 regularization hyperparameter
 - `--epsilon` (float, default=0.02): Poisoning rate for training data
@@ -122,21 +153,12 @@ python step_by_step.py --dataset_name aci --model_name ftt --target_label 1 --ep
 
 Results will be saved in `./results/<dataset_name>.csv`.
 
-<!-- ## Reproducibility
-
-To reproduce the results:
-1. Install dependencies from `requirements.txt`.
-2. Run the script with the desired parameters.
-3. Models are saved in `./saved_models/` for reuse. -->
-
-
 ## Contact
 For any questions or issues, please contact the authors:
 
 - Behrad Tajalli: hamidreza.tajalli@ru.nl
 - Stefanos Koffas: S.Koffas@tudelft.nl
 - Stjepan Picek: stjepan.picek@ru.nl
-
 
 ## License
 
