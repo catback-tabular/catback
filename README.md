@@ -77,16 +77,16 @@ The versions in `requirements.txt` are pinned to match the development environme
 ## Hardware and Software Requirements
 
 ### Hardware Requirements
-- **CPU**: Modern multi-core processor (Intel/AMD x86_64) - tested on Intel Xeon Platinum 8360Y @ 2.40GHz
-- **RAM**: Minimum 8GB, recommended 16GB+ for larger datasets - tested with 32GB available
+- **CPU**: Modern multi-core processor, e.g., Intel/AMD x86_64 - (tested on Intel Xeon Platinum 8360Y @ 2.40GHz)
+- **RAM**: Minimum 8GB, recommended 16GB+ for larger datasets - (tested with 32GB available)
 - **Storage**: At least 16GB free space for datasets and model storage
-- **GPU**: Needed for faster training (CUDA-compatible GPU with 4GB+ VRAM) - tested on NVIDIA A100-SXM4-40GB
+- **GPU**: Needed for faster training: CUDA-compatible GPU with 4GB+ VRAM - (tested on NVIDIA A100-SXM4-40GB)
 
 ### Software Requirements
-- **Operating System**: Linux (tested on RHEL 9.4)
-- **Python**: Version 3.8 or higher - tested with Python 3.11.3
-- **CUDA**: version 11.0+ for using GPU acceleration - tested with CUDA 12.4
-- **PyTorch**: Compatible with CUDA version - tested with PyTorch 2.5.1+cu124
+- **Operating System**: Linux - (tested on RHEL 9.4)
+- **Python**: Version 3.8 or higher - (tested with Python 3.11.3)
+- **CUDA**: version 11.0+ for using GPU acceleration - (tested with CUDA 12.4)
+- **PyTorch**: Compatible with CUDA version - (tested with PyTorch 2.5.1+cu124)
 
 ### Notes
 - The artifact can run on commodity hardware (standard desktop/laptop)
@@ -113,7 +113,7 @@ Most datasets need to be manually downloaded and placed in the `./data/` directo
 ### HIGGS
 - Download `HIGGS.csv.gz` from [UCI Machine Learning Repository: HIGGS](https://archive.ics.uci.edu/ml/datasets/HIGGS).
 - Extract `HIGGS.csv`.
-- Run the preprocessing script (HIGGS-preprocess.py, if available) to generate `processed.pkl` (the preprocessing file is provided in https://github.com/bartpleiter/tabular-backdoors as well).
+- Run the preprocessing script (HIGGS-preprocess.py available in `./data/`) to generate `processed.pkl` (the preprocessing file is provided in https://github.com/bartpleiter/tabular-backdoors as well).
 - Place `processed.pkl` in `./data/`.
 
 ### Poker (Poker Hand)
