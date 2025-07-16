@@ -1,8 +1,8 @@
 # CatBack: Universal Backdoor Attacks on Tabular Data via Categorical Encoding
 
-[![Reproducible](https://img.shields.io/badge/Reproducible-Yes-brightgreen)](https://shields.io/)
+<!-- [![Reproducible](https://img.shields.io/badge/Reproducible-Yes-brightgreen)](https://shields.io/)
 [![Artifact Available](https://img.shields.io/badge/Artifact-Available-blue)](https://shields.io/)
-[![Functional](https://img.shields.io/badge/Functional-Yes-green)](https://shields.io/)
+[![Functional](https://img.shields.io/badge/Functional-Yes-green)](https://shields.io/) -->
 
 This repository is prepared for the artifact evaluation of our accepted paper: **CatBack: Universal Backdoor Attacks on Tabular Data via Categorical Encoding**.
 
