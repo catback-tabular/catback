@@ -9,3 +9,8 @@ openml==0.15.0
 einops==0.8.0
 tab-transformer-pytorch==0.3.0
 wandb==0.19.1 
+scipy==1.14.1
+matplotlib==3.9.2
+seaborn==0.13.2
+wget==3.2 
+ipython==8.29.0 
