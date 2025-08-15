@@ -18,6 +18,7 @@ class XGBoostModel:
         n_jobs=-1,
         nthread=None,
         gamma=0,
+        args=None,
         min_child_weight=1,
         max_delta_step=0,
         subsample=0.7,
@@ -58,6 +59,7 @@ class XGBoostModel:
         seed (int): Random seed for reproducibility.
         """
         self.model_name = "XGBoost"
+        self.num_workers = args.num_workers if args else 0
         self.max_depth = max_depth
         self.learning_rate = learning_rate
         self.n_estimators = n_estimators
@@ -98,7 +100,7 @@ class XGBoostModel:
             silent=self.silent,
             objective=self.objective,
             booster=self.booster,
-            n_jobs=-1,
+            n_jobs=self.num_workers,
             nthread=None,
             gamma=self.gamma,
             min_child_weight=self.min_child_weight,
@@ -161,7 +163,7 @@ class XGBoostModel:
             X_train, 
             y_train,
             eval_set=eval_set,
-            verbose=verbose
+            verbose=verbose,
         )
     
     

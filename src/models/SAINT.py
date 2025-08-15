@@ -13,9 +13,10 @@ from .saint_lib.utils import count_parameters, classification_scores, mean_sq_er
 
 class SAINTModel:
 
-    def __init__(self, data_obj, is_numerical=False):
+    def __init__(self, data_obj, is_numerical=False, args=None):
 
         self.model_name = "SAINT"
+        self.num_workers = args.num_workers if args else 0
 
         if data_obj.num_classes == 2:
             task = 'binary'
@@ -169,8 +170,14 @@ class SAINTModel:
         val_ds = DataSetCatCon(X_val, y_val, self.cat_idxs)
 
         # Wrap them in DataLoaders
-        trainloader = DataLoader(train_ds, batch_size=self.opt.batchsize, shuffle=True)
-        validloader = DataLoader(val_ds, batch_size=self.opt.batchsize, shuffle=False)
+        pin_memory = torch.cuda.is_available()
+        trainloader = DataLoader(train_ds, batch_size=self.opt.batchsize, shuffle=True,
+                                num_workers=self.num_workers, pin_memory=pin_memory,
+                                persistent_workers=self.num_workers > 0)
+        validloader = DataLoader(val_ds, batch_size=self.opt.batchsize, shuffle=False,
+                                num_workers=self.num_workers, pin_memory=pin_memory,
+                                persistent_workers=self.num_workers > 0)
+                                
 
 
 
@@ -428,7 +435,10 @@ class SAINTModel:
         test_ds = DataSetCatCon(X_test, y_test, self.cat_idxs)
 
         # Wrap them in DataLoaders
-        testloader = DataLoader(test_ds, batch_size=self.opt.batchsize, shuffle=False)
+        pin_memory = torch.cuda.is_available()
+        testloader = DataLoader(test_ds, batch_size=self.opt.batchsize, shuffle=False,
+                              num_workers=self.num_workers, pin_memory=pin_memory,
+                              persistent_workers=self.num_workers > 0)
 
 
 

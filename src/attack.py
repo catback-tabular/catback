@@ -49,7 +49,7 @@ class Attack:
 
     """
     
-    def __init__(self, device, model, data_obj, target_label, mu, beta, lambd, epsilon):
+    def __init__(self, device, model, data_obj, target_label, mu, beta, lambd, epsilon, args=None):
         """
         Initializes the class for performing a backdoor attack on a model.
 
@@ -98,6 +98,7 @@ class Attack:
         # Set regularization hyperparameters
         self.beta = beta
         self.lambd = lambd
+        self.num_workers = args.num_workers if args else 0
         self.epsilon = epsilon
 
          # Initialize the poisoned dataset and samples as None
@@ -246,7 +247,10 @@ class Attack:
         logging.info("Starting confidence-based sample ranking...")
         
         # Create a DataLoader for D_non_target
-        non_target_loader = DataLoader(self.D_non_target, batch_size=batch_size, shuffle=False)
+        pin_memory = torch.cuda.is_available()
+        non_target_loader = DataLoader(self.D_non_target, batch_size=batch_size, shuffle=False,
+                                     num_workers=self.num_workers, pin_memory=pin_memory,
+                                     persistent_workers=self.num_workers > 0)
         
         # Initialize lists to store confidence scores and corresponding indices
         confidence_scores = []
@@ -458,7 +462,10 @@ class Attack:
         optimizer = torch.optim.Adam([self.delta], lr=learning_rate)
         
         # Define the DataLoader for D_picked
-        picked_loader = DataLoader(self.D_picked, batch_size=batch_size, shuffle=True)
+        pin_memory = torch.cuda.is_available()
+        picked_loader = DataLoader(self.D_picked, batch_size=batch_size, shuffle=True,
+                                 num_workers=self.num_workers, pin_memory=pin_memory,
+                                 persistent_workers=self.num_workers > 0)
         
         # Ensure that the mode vector is computed
         if self.mode_vector is None:

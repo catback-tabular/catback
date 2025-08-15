@@ -4,6 +4,7 @@ import logging
 import time # Import time module for Unix timestamp
 from pathlib import Path
 import csv
+import os
 
 from src.attack import Attack
 
@@ -107,12 +108,12 @@ def attack_step_by_step(args, use_saved_models, use_existing_trigger):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     # Step 1: Initialize the dataset object which can handle, convert and revert the dataset.
-    data_obj = dataset_dict[dataset_name]()
+    data_obj = dataset_dict[dataset_name](args)
 
     # Step 2: Initialize the model. If needed (optional), the model can be loaded from a saved model. Then the model is not needed to be trained again.
 
     if model_name == "ftt":
-        model = FTTModel(data_obj=data_obj)
+        model = FTTModel(data_obj=data_obj, args=args)
     elif model_name == "tabnet" or model_name == "catboost" or model_name == "xgboost":
         model = TabNetModel(
             n_d=64,
@@ -122,10 +123,11 @@ def attack_step_by_step(args, use_saved_models, use_existing_trigger):
             n_independent=2,
             n_shared=2,
             momentum=0.3,
-            mask_type='entmax'
+            mask_type='entmax',
+            args=args
         )
     elif model_name == "saint":
-        model = SAINTModel(data_obj=data_obj, is_numerical=True)
+        model = SAINTModel(data_obj=data_obj, is_numerical=True, args=args)
     
     # creating and checking the path for saving and loading the clean models.
     clean_model_path = models_path / Path(f"converted_clean")
@@ -158,7 +160,7 @@ def attack_step_by_step(args, use_saved_models, use_existing_trigger):
 
 
     # Step 3: Initialize the Attack class with model, data, and target label
-    attack = Attack(device=device, model=model, data_obj=data_obj, target_label=target_label, mu=mu, beta=beta, lambd=lambd, epsilon=epsilon)
+    attack = Attack(device=device, model=model, data_obj=data_obj, target_label=target_label, mu=mu, beta=beta, lambd=lambd, epsilon=epsilon, args=args)
 
     # Step 4: Train the model on the clean training dataset if the already trained model is not to be used.
     if not use_saved_models['clean']:
@@ -223,14 +225,14 @@ def attack_step_by_step(args, use_saved_models, use_existing_trigger):
     # Define the black box model
     if model_name == "xgboost":
         objective = "multi" if attack.data_obj.num_classes > 2 else "binary"
-        black_box_model = model_dict[model_name](objective=objective)
+        black_box_model = model_dict[model_name](objective=objective, args=args)
         black_box_model.to(device)
         attack.model = black_box_model
 
     # for SAINT, we need the define a new model with is_numerical=False so 
     # the model can handle the categorical features as well.
     if attack.model.model_name == "SAINT":
-        attack.model = SAINTModel(data_obj=attack.data_obj, is_numerical=False)
+        attack.model = SAINTModel(data_obj=attack.data_obj, is_numerical=False, args=args)
 
 
     # Step 11: Revert the poisoned dataset to the original categorical features
@@ -304,6 +306,7 @@ if __name__ == "__main__":
     parser.add_argument("--lambd", type=float, default=0.1)
     parser.add_argument("--epsilon", type=float, default=0.02)
     parser.add_argument("--exp_num", type=int, default=0)
+    parser.add_argument("--num_workers", type=int, default=None, help="Number of workers for data loading. If not provided, uses number of CPU cores available.")
 
     # parse the arguments
     args = parser.parse_args()
@@ -328,6 +331,15 @@ if __name__ == "__main__":
         raise ValueError(f"Lambd must be between 0 and 1. You provided: {args.lambd}")
     if args.epsilon < 0 or args.epsilon > 1:
         raise ValueError(f"Epsilon must be between 0 and 1. You provided: {args.epsilon}")
+    
+    # Determine number of workers for data loading
+    if args.num_workers is None:
+        args.num_workers = min(4, os.cpu_count())
+        logging.info(f"No num_workers specified, using {args.num_workers} workers based on available CPU cores.")
+    else:
+        args.num_workers = max(0, min(args.num_workers, os.cpu_count()))
+        logging.info(f"Using {args.num_workers} workers for data loading.")
+        
     
     use_saved_models = {'clean': False, 'poisoned': False}
     use_existing_trigger = False

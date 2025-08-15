@@ -15,7 +15,7 @@ class Poker:
     This class is used to load the Poker hand dataset and convert it into a format suitable for training a model.
     """
     
-    def __init__(self, test_size=0.2, random_state=None, batch_size=64):
+    def __init__(self, args=None, test_size=0.2, random_state=None, batch_size=64):
 
         self.dataset_name = "poker"
         self.num_classes = 10
@@ -26,6 +26,7 @@ class Poker:
         self.test_size = test_size
         self.random_state = random_state
         self.batch_size = batch_size
+        self.num_workers = args.num_workers if args else 0
 
         # Download the csv files from https://www.kaggle.com/datasets/hosseinah1/poker-game-dataset/data
         train_data = pd.read_csv(Path(__file__).parent.parent.parent / 'data' / 'poker-hand-training.csv')
@@ -117,9 +118,14 @@ class Poker:
         test_dataset = TensorDataset(X_test_tensor, y_test_tensor)
         
         # Create DataLoader for each split
-        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        pin_memory = torch.cuda.is_available()
+        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,
+                                num_workers=self.num_workers, pin_memory=pin_memory,
+                                persistent_workers=self.num_workers > 0)
         # val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
-        test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+        test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False,
+                               num_workers=self.num_workers, pin_memory=pin_memory,
+                               persistent_workers=self.num_workers > 0)
         
         # Return the Datasets for training and test sets
         if dataloader:
@@ -162,8 +168,13 @@ class Poker:
         test_dataset = TensorDataset(X_test_cat_tensor, X_test_num_tensor, y_test_tensor)
 
         # Create DataLoader for each split
-        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-        test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+        pin_memory = torch.cuda.is_available()
+        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,
+                                num_workers=self.num_workers, pin_memory=pin_memory,
+                                persistent_workers=self.num_workers > 0)
+        test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False,
+                               num_workers=self.num_workers, pin_memory=pin_memory,
+                               persistent_workers=self.num_workers > 0)
 
         # Return the Datasets for training and test sets
         if dataloader:
@@ -224,9 +235,14 @@ class Poker:
         test_dataset = TensorDataset(X_test_tensor, y_test_tensor)
         
         # Create DataLoader for each split
-        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        pin_memory = torch.cuda.is_available()
+        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,
+                                num_workers=self.num_workers, pin_memory=pin_memory,
+                                persistent_workers=self.num_workers > 0)
         # val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
-        test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+        test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False,
+                               num_workers=self.num_workers, pin_memory=pin_memory,
+                               persistent_workers=self.num_workers > 0)
         
         # Return the Datasets for training and test sets
         if dataloader:
@@ -580,9 +596,14 @@ class Poker:
         
 
         # Create DataLoader for each split
-        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        pin_memory = torch.cuda.is_available()
+        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,
+                                num_workers=self.num_workers, pin_memory=pin_memory,
+                                persistent_workers=self.num_workers > 0)
         # val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
-        test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+        test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False,
+                               num_workers=self.num_workers, pin_memory=pin_memory,
+                               persistent_workers=self.num_workers > 0)
         
         # Return the Datasets for training and test sets
         if dataloader:

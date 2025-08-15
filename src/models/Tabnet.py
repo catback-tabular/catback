@@ -3,7 +3,7 @@ from pytorch_tabnet.tab_model import TabNetClassifier
 
 
 class TabNetModel:
-    def __init__(self, n_d=64, n_a=64, n_steps=5, gamma=1.5, n_independent=2, n_shared=2, momentum=0.3, mask_type='entmax'):
+    def __init__(self, n_d=64, n_a=64, n_steps=5, gamma=1.5, n_independent=2, n_shared=2, momentum=0.3, mask_type='entmax', args=None):
         """
         Initializes a TabNet classifier model with customizable hyperparameters.
         
@@ -27,6 +27,7 @@ class TabNetModel:
         self.n_shared = n_shared
         self.momentum = momentum
         self.mask_type = mask_type
+        self.num_workers = args.num_workers if args else 0
 
         self.max_epochs = 65
 
@@ -86,6 +87,8 @@ class TabNetModel:
 
         if max_epochs is None:
             max_epochs = self.max_epochs
+        
+        pin_memory = torch.cuda.is_available()
 
         # Train the model
         self.model.fit(
@@ -94,7 +97,9 @@ class TabNetModel:
             max_epochs=max_epochs,
             patience=patience,
             batch_size=batch_size,
-            virtual_batch_size=virtual_batch_size
+            virtual_batch_size=virtual_batch_size,
+            num_workers=self.num_workers,
+            pin_memory=pin_memory,
         )
     
     def predict(self, X_test):
