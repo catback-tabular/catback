@@ -29,6 +29,7 @@ class FTTModel:
         self.epochs = 65
         self.device = None
         self.num_workers = args.num_workers if args else 0
+        self.batch_size = args.train_batch_size if args else 1024
 
 
 
@@ -106,10 +107,10 @@ class FTTModel:
         """
         # Train the model
         pin_memory = torch.cuda.is_available()
-        train_loader = DataLoader(train_dataset, batch_size=1024, shuffle=True,
+        train_loader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=True,
                                 num_workers=self.num_workers, pin_memory=pin_memory,
                                 persistent_workers=self.num_workers > 0)
-        val_loader = DataLoader(val_dataset, batch_size=1024, shuffle=True,
+        val_loader = DataLoader(val_dataset, batch_size=self.batch_size, shuffle=True,
                               num_workers=self.num_workers, pin_memory=pin_memory,
                               persistent_workers=self.num_workers > 0)
 
@@ -232,10 +233,10 @@ class FTTModel:
         """
         # Train the model
         pin_memory = torch.cuda.is_available()
-        train_loader = DataLoader(train_dataset, batch_size=1024, shuffle=True,
+        train_loader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=True,
                                 num_workers=self.num_workers, pin_memory=pin_memory,
                                 persistent_workers=self.num_workers > 0)
-        val_loader = DataLoader(val_dataset, batch_size=1024, shuffle=True,
+        val_loader = DataLoader(val_dataset, batch_size=self.batch_size, shuffle=True,
                               num_workers=self.num_workers, pin_memory=pin_memory,
                               persistent_workers=self.num_workers > 0)
 
@@ -358,7 +359,7 @@ class FTTModel:
         """
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.to(device, model_type="original")
-        val_loader = DataLoader(X_test, batch_size=1024, shuffle=False,
+        val_loader = DataLoader(X_test, batch_size=self.batch_size, shuffle=False,
                               num_workers=self.num_workers, pin_memory=torch.cuda.is_available(),
                               persistent_workers=self.num_workers > 0)
         self.model_original.eval()
@@ -396,7 +397,7 @@ class FTTModel:
     def predict_converted(self, X_test):
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.to(device, model_type="converted")
-        val_loader = DataLoader(X_test, batch_size=1024, shuffle=False,
+        val_loader = DataLoader(X_test, batch_size=self.batch_size, shuffle=False,
                               num_workers=self.num_workers, pin_memory=torch.cuda.is_available(),
                               persistent_workers=self.num_workers > 0)
         self.model_converted.eval()

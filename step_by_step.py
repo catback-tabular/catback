@@ -307,6 +307,7 @@ if __name__ == "__main__":
     parser.add_argument("--epsilon", type=float, default=0.02)
     parser.add_argument("--exp_num", type=int, default=0)
     parser.add_argument("--num_workers", type=int, default=None, help="Number of workers for data loading. If not provided, uses number of CPU cores available.")
+    parser.add_argument("--train_batch_size", type=int, default=128, help="Batch size for training data. Higher values (512+) recommended for high-end GPUs like RTX 5090.")
 
     # parse the arguments
     args = parser.parse_args()
@@ -332,6 +333,10 @@ if __name__ == "__main__":
     if args.epsilon < 0 or args.epsilon > 1:
         raise ValueError(f"Epsilon must be between 0 and 1. You provided: {args.epsilon}")
     
+    # Validate batch size
+    if args.train_batch_size <= 0:
+        raise ValueError(f"Train batch size must be positive. You provided: {args.train_batch_size}")
+    
     # Determine number of workers for data loading
     if args.num_workers is None:
         args.num_workers = min(4, os.cpu_count())
@@ -340,6 +345,12 @@ if __name__ == "__main__":
         args.num_workers = max(0, min(args.num_workers, os.cpu_count()))
         logging.info(f"Using {args.num_workers} workers for data loading.")
         
+    # Log batch size configuration
+    logging.info(f"Using train batch size: {args.train_batch_size}")
+    if args.train_batch_size >= 512:
+        logging.info("Large batch size detected - good for high-end GPUs")
+    elif args.train_batch_size < 64:
+        logging.warning("Small batch size may underutilize GPU resources.")
     
     use_saved_models = {'clean': False, 'poisoned': False}
     use_existing_trigger = False

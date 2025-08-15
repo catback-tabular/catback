@@ -25,7 +25,7 @@ class Poker:
 
         self.test_size = test_size
         self.random_state = random_state
-        self.batch_size = batch_size
+        self.batch_size = args.train_batch_size if args else batch_size
         self.num_workers = args.num_workers if args else 0
 
         # Download the csv files from https://www.kaggle.com/datasets/hosseinah1/poker-game-dataset/data

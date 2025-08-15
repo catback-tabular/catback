@@ -33,6 +33,10 @@ class SAINTModel:
             self.opt.dtask = 'reg'
         else:
             self.opt.dtask = 'clf'
+            
+        # Override batch size with configurable value
+        if args and hasattr(args, 'train_batch_size'):
+            self.opt.batchsize = args.train_batch_size
 
         
         # -------------------

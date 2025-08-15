@@ -99,6 +99,7 @@ class Attack:
         self.beta = beta
         self.lambd = lambd
         self.num_workers = args.num_workers if args else 0
+        self.batch_size = args.train_batch_size if args else 64
         self.epsilon = epsilon
 
          # Initialize the poisoned dataset and samples as None
@@ -224,7 +225,7 @@ class Attack:
         return self.D_non_target
     
 
-    def confidence_based_sample_ranking(self, batch_size=64) -> TensorDataset:
+    def confidence_based_sample_ranking(self, batch_size=None) -> TensorDataset:
         """
         Performs confidence-based sample ranking to select the top mu fraction of non-target samples
         based on the model's confidence in predicting the target class.
@@ -243,6 +244,9 @@ class Attack:
         """
         if self.D_non_target is None:
             raise ValueError("D_non_target is not initialized. Please run select_non_target_samples() first.")
+        
+        if batch_size is None:
+            batch_size = self.batch_size
         
         logging.info("Starting confidence-based sample ranking...")
         
@@ -426,7 +430,7 @@ class Attack:
  
 
 
-    def optimize_trigger(self, num_epochs=200, learning_rate=0.0001, batch_size=64, verbose=True, patience=30):
+    def optimize_trigger(self, num_epochs=200, learning_rate=0.0001, batch_size=None, verbose=True, patience=30):
         """
         Optimizes the universal trigger pattern \( \delta \) by minimizing the loss function over D_picked.
 
@@ -456,7 +460,12 @@ class Attack:
         if self.delta is None:
             raise ValueError("Trigger pattern (delta) is not defined. Please run define_trigger() first.")
         
+        if batch_size is None:
+            batch_size = self.batch_size
+        
         logging.info("Starting optimization of the trigger pattern (delta)...")
+        logging.info(f"Using batch size: {batch_size} for trigger optimization")
+
         
         # Define the optimizer for delta
         optimizer = torch.optim.Adam([self.delta], lr=learning_rate)
