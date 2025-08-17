@@ -142,6 +142,9 @@ The attack is executed via the `step_by_step.py` script. It performs the followi
 - `--lambd` (float, default=0.1): L2 regularization hyperparameter
 - `--epsilon` (float, default=0.02): Poisoning rate for training data
 - `--exp_num` (int, default=0): Experiment number for logging
+- `--num_workers` (int, optional): Number of CPU workers for data loading.
+- `--train_batch_size` (int, optional, default=128): Batch size for training.
+
 
 ### Example
 
