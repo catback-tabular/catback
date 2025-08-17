@@ -27,6 +27,8 @@ class FTTModel:
         self.model_name = "FTTransformer"
         self.data_obj = data_obj
         self.epochs = 65
+        if args.dataset_name.lower() == "higgs":
+            self.epochs = 40
         self.device = None
         self.num_workers = args.num_workers if args else 0
         self.batch_size = args.train_batch_size if args else 1024
@@ -123,7 +125,7 @@ class FTTModel:
         # 11. Training loop with Early Stopping
         epochs = self.epochs
         best_val_loss = float('inf')
-        patience = 20
+        patience = 15
         trigger_times = 0
 
         best_fttransformer_original = None
@@ -249,7 +251,7 @@ class FTTModel:
         # 11. Training loop with Early Stopping
         epochs = self.epochs
         best_val_loss = float('inf')
-        patience = 20
+        patience = 15
         trigger_times = 0
 
         best_fttransformer_converted = None

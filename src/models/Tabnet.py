@@ -31,6 +31,8 @@ class TabNetModel:
         self.batch_size = args.train_batch_size if args else 1024
 
         self.max_epochs = 65
+        if args.dataset_name.lower() == "higgs":
+            self.max_epochs = 40
 
 
 
@@ -68,7 +70,7 @@ class TabNetModel:
         """
         return self.model
 
-    def fit(self, X_train, y_train, X_valid=None, y_valid=None, max_epochs=None, patience=65, batch_size=None, virtual_batch_size=128):
+    def fit(self, X_train, y_train, X_valid=None, y_valid=None, max_epochs=None, patience=15, batch_size=None, virtual_batch_size=128):
         """
         Trains the TabNet model using the provided training data.
         

@@ -9,6 +9,7 @@ import torch.optim as optim
 from .saint_lib.augmentations import embed_data_mask
 # utils.py contains helper functions such as counting parameters, calculating classification scores, etc.
 from .saint_lib.utils import count_parameters, classification_scores, mean_sq_error
+from sklearn.metrics import roc_auc_score, mean_squared_error
 
 
 class SAINTModel:
@@ -26,6 +27,8 @@ class SAINTModel:
             raise ValueError(f"Invalid number of classes for data object: {data_obj.num_classes}")
         
         self.opt = argparse_prepare()
+        if args.dataset_name.lower() == "higgs":
+            self.opt.epochs = 50
         self.opt.task = task
 
         # If the task is 'regression', set opt.dtask to 'reg'; otherwise set to 'clf' for classification
@@ -244,6 +247,9 @@ class SAINTModel:
         best_test_auroc = 0
         best_test_accuracy = 0
         best_valid_rmse = 100000  # a large initial value for RMSE tracking
+        best_val_loss = float('inf')
+        early_stop_patience = 15
+        early_stop_counter = 0
 
         print('Training begins now.')
 
@@ -320,64 +326,65 @@ class SAINTModel:
                     'loss': loss.item()
                 })
 
-            # Every 5 epochs, check performance on validation and test sets
-            if epoch % 5 == 0:
-                # Switch the model to eval mode for validation
-                self.model.eval()
-                with torch.no_grad():
-                    if self.opt.task in ['binary', 'multiclass']:
-                        # classification_scores calculates accuracy and AUROC
-                        accuracy, auroc = classification_scores(self.model, validloader, self.device, self.opt.task, vision_dset=False)
-                        # test_accuracy, test_auroc = classification_scores(self.model, testloader, self.device, self.opt.task, vision_dset=False)
-
-                        print('[EPOCH %d] VALID ACCURACY: %.3f, VALID AUROC: %.3f' %
-                            (epoch + 1, accuracy, auroc))
-                        # print('[EPOCH %d] TEST ACCURACY: %.3f, TEST AUROC: %.3f' %
-                        #     (epoch + 1, test_accuracy, test_auroc))
-
-                        # Log validation/test metrics if using wandb
-                        if self.opt.active_log:
-                            wandb.log({'valid_accuracy': accuracy, 'valid_auroc': auroc})
-                            # wandb.log({'test_accuracy': test_accuracy, 'test_auroc': test_auroc})
-
-                        # Save the model if it achieves better validation accuracy (and/or AUROC)
-                        # For multiclass, we track best accuracy.
-                        if self.opt.task == 'multiclass':
-                            if accuracy > best_valid_accuracy:
-                                best_valid_accuracy = accuracy
-                                # best_test_auroc = test_auroc
-                                # best_test_accuracy = test_accuracy
-                                # torch.save(self.model.state_dict(), f'{self.modelsave_path}/bestmodel.pth')
-                        else:
-                            # For binary, track best accuracy as well, or best AUROC if preferred
-                            if accuracy > best_valid_accuracy:
-                                best_valid_accuracy = accuracy
-                                # best_test_auroc = test_auroc
-                                # best_test_accuracy = test_accuracy
-                                # torch.save(self.model.state_dict(), f'{self.modelsave_path}/bestmodel.pth')
-
+            self.model.eval()
+            val_loss = 0.0
+            all_y_outs = []
+            all_y_gts = []
+            with torch.no_grad():
+                for i, data in enumerate(validloader, 0):
+                    x_categ, x_cont, y_gts_batch, cat_mask, con_mask = data[0].to(self.device), data[1].to(self.device), data[2].to(self.device), data[3].to(self.device), data[4].to(self.device)
+                    _, x_categ_enc, x_cont_enc = embed_data_mask(x_categ, x_cont, cat_mask, con_mask, self.model)
+                    reps = self.model.transformer(x_categ_enc, x_cont_enc)
+                    y_reps = reps[:, 0, :]
+                    y_outs_batch = self.model.mlpfory(y_reps)
+                    all_y_outs.append(y_outs_batch.cpu())
+                    all_y_gts.append(y_gts_batch.cpu())
+                    if self.opt.task == 'regression':
+                        loss = criterion(y_outs_batch, y_gts_batch)
                     else:
-                        # For regression, compute RMSE on valid and test sets
-                        valid_rmse = mean_sq_error(self.model, validloader, self.device, vision_dset=False)
-                        # test_rmse = mean_sq_error(self.model, testloader, self.device, vision_dset=False)
+                        loss = criterion(y_outs_batch, y_gts_batch.squeeze())
+                    val_loss += loss.item()
+            val_loss /= len(validloader)
+            print('[EPOCH %d] VALID LOSS: %.3f' % (epoch + 1, val_loss))
 
-                        print('[EPOCH %d] VALID RMSE: %.3f' %
-                            (epoch + 1, valid_rmse))
-                        # print('[EPOCH %d] TEST RMSE: %.3f' %
-                        #     (epoch + 1, test_rmse))
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                early_stop_counter = 0
+            else:
+                early_stop_counter += 1
+                if early_stop_counter >= early_stop_patience:
+                    print('Early stopping at epoch %d' % (epoch + 1))
+                    break
 
-                        # Log these metrics if wandb is active
-                        if self.opt.active_log:
-                            wandb.log({'valid_rmse': valid_rmse})
-                            # wandb.log({'test_rmse': test_rmse})
-
-                        # If this validation RMSE is better than our previous best, save the model
-                        if valid_rmse < best_valid_rmse:
-                            best_valid_rmse = valid_rmse
-                            # best_test_rmse = test_rmse
-                            # torch.save(self.model.state_dict(), f'{self.modelsave_path}/bestmodel.pth')
-
-                # Switch back to train mode after validation
+            all_y_outs_cat = torch.cat(all_y_outs)
+            all_y_gts_cat = torch.cat(all_y_gts)
+            if epoch % 5 == 0:
+                if self.opt.task in ['binary', 'multiclass']:
+                    y_pred = torch.argmax(all_y_outs_cat, dim=1).float()
+                    y_test = all_y_gts_cat.squeeze().float()
+                    correct = (y_pred == y_test).sum().float()
+                    accuracy = correct / len(y_test) * 100
+                    auroc = 0
+                    if self.opt.task == 'binary' and len(torch.unique(y_test)) > 1:
+                        m = nn.Softmax(dim=1)
+                        prob = m(all_y_outs_cat)[:, 1].cpu().numpy()
+                        auroc = roc_auc_score(y_score=prob, y_true=y_test.cpu().numpy())
+                    print('[EPOCH %d] VALID ACCURACY: %.3f, VALID AUROC: %.3f' % (epoch + 1, accuracy, auroc))
+                    if self.opt.active_log:
+                        wandb.log({'valid_accuracy': accuracy, 'valid_auroc': auroc})
+                    if self.opt.task == 'multiclass':
+                        if accuracy > best_valid_accuracy:
+                            best_valid_accuracy = accuracy
+                    else:
+                        if accuracy > best_valid_accuracy:
+                            best_valid_accuracy = accuracy
+                else:
+                    valid_rmse = mean_squared_error(all_y_gts_cat.cpu().numpy(), all_y_outs_cat.cpu().numpy(), squared=False)
+                    print('[EPOCH %d] VALID RMSE: %.3f' % (epoch + 1, valid_rmse))
+                    if self.opt.active_log:
+                        wandb.log({'valid_rmse': valid_rmse})
+                    if valid_rmse < best_valid_rmse:
+                        best_valid_rmse = valid_rmse
                 self.model.train()
 
         # -------------------

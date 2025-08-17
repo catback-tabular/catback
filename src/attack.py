@@ -106,6 +106,8 @@ class Attack:
         self.poisoned_dataset = (None, None)
         self.poisoned_samples = (None, None)
 
+        self.args = args
+
         
         logging.info(f"Attack initialized with target label: {self.target_label}")
         
@@ -465,6 +467,9 @@ class Attack:
         
         logging.info("Starting optimization of the trigger pattern (delta)...")
         logging.info(f"Using batch size: {batch_size} for trigger optimization")
+
+        if self.args.dataset_name.lower() == "higgs" and self.args.model_name.lower() == "tabnet":
+            num_epochs = 120
 
         
         # Define the optimizer for delta
