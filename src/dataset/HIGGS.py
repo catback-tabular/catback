@@ -150,24 +150,24 @@ class HIGGS:
 
 
 
-if __name__ == "__main__":
-    dataset = HIGGS()
+# if __name__ == "__main__":
+#     dataset = HIGGS()
 
-    # print the number of samples for each class
-    print(dataset.y.value_counts())
+#     # print the number of samples for each class
+#     print(dataset.y.value_counts())
 
-    # Print the total number of samples in the dataset
-    print(f"Total number of samples in the dataset: {len(dataset.X_original)}")
+#     # Print the total number of samples in the dataset
+#     print(f"Total number of samples in the dataset: {len(dataset.X_original)}")
 
-    # Use np.unique to count the number of samples in each class
-    unique, counts = np.unique(dataset.y, return_counts=True)
-    class_counts = dict(zip(unique, counts))
-    print(f"Number of samples in each class: {class_counts}")
+#     # Use np.unique to count the number of samples in each class
+#     unique, counts = np.unique(dataset.y, return_counts=True)
+#     class_counts = dict(zip(unique, counts))
+#     print(f"Number of samples in each class: {class_counts}")
 
-    # Print the number of numerical features
-    print(f"Number of numerical features: {len(dataset.num_cols)}")
+#     # Print the number of numerical features
+#     print(f"Number of numerical features: {len(dataset.num_cols)}")
 
-    # Print the number of categorical features
-    print(f"Number of categorical features: {len(dataset.cat_cols)}")
+#     # Print the number of categorical features
+#     print(f"Number of categorical features: {len(dataset.cat_cols)}")
 
     
