@@ -37,6 +37,7 @@ This repository implements the CatBack backdoor attack on tabular datasets. It i
 
 ```
 .
+├── defenses/                    # Defense implementations
 ├── src
 │   ├── attack.py                # Core attack logic
 │   ├── dataset/
@@ -155,6 +156,17 @@ python step_by_step.py --dataset_name aci --model_name ftt --target_label 1 --ep
 ```
 
 Results will be saved in `./results/<dataset_name>.csv`.
+
+## Defense Implementations
+
+The `defenses/` directory contains the implementations of the backdoor defense methods evaluated in our paper:
+
+- **Spectral Signature** (`ss.py`): Detects poisoned samples by analyzing the spectral signature of learned feature representations.
+- **Neural Cleanse** (`NC.py`, `nc_files/`): Reverse-engineers potential backdoor triggers and uses outlier detection to identify backdoored labels.
+- **Fine-Pruning** (`pruning.py`): Prunes dormant neurons (those with low activation on clean data) and fine-tunes the model to mitigate backdoor behavior.
+- **Beatrix** (`beatrix_files/`): Uses Gram-matrix-based feature correlations and KMMD distance to detect backdoor attacks. Includes both the tabular adaptation used in our evaluation and the original image-domain implementation for reference.
+
+> **Note:** These defense scripts are provided as-is from our evaluation and have **not** been integrated into the artifact evaluation pipeline. They may require adjustments to paths, imports, or configurations to run in your environment. They are included for reference so that researchers can inspect, adapt, or build upon them.
 
 ## Contact
 For any questions or issues, please contact the authors:
