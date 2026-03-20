@@ -168,6 +168,24 @@ The `defenses/` directory contains the implementations of the backdoor defense m
 
 > **Note:** These defense scripts are provided as-is from our evaluation and have **not** been integrated into the artifact evaluation pipeline. They may require adjustments to paths, imports, or configurations to run in your environment. They are included for reference so that researchers can inspect, adapt, or build upon them.
 
+## Citation
+
+If you find this work useful in your research, please consider citing our paper:
+
+```bibtex
+@inproceedings{tajalli2026catback,
+  author    = {Behrad Tajalli and Stefanos Koffas and Stjepan Picek},
+  title     = {CatBack: Universal Backdoor Attacks on Tabular Data via Categorical Encoding},
+  booktitle = {Proceedings of the Network and Distributed System Security Symposium (NDSS 2026)},
+  year      = {2026},
+  month     = feb,
+  address   = {San Diego, CA, USA},
+  publisher = {The Internet Society},
+  doi       = {10.14722/ndss.2026.231469},
+  isbn      = {979-8-9919276-8-0}
+}
+```
+
 ## Contact
 For any questions or issues, please contact the authors:
 
